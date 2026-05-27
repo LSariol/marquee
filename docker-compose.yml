@@ -6,7 +6,7 @@ services:
     environment:
       - DATABASE_URL=${MARQUEE_APP_DATABASE_URL}
       - MIGRATOR_DATABASE_URL=${MARQUEE_MIGRATOR_DATABASE_URL}
-      - BASE_URL=marquee.mobasity.com
+      - BASE_URL=https://marquee.mobasity.com
       - TWITCH_CLIENT_ID=${MARQUEE_TWITCH_CLIENT_ID}
       - TWITCH_CLIENT_SECRET=${MARQUEE_TWITCH_CLIENT_SECRET}
       - TMDB_API_KEY=${MARQUEE_TMDB_API_KEY}
