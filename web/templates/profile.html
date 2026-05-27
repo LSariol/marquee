@@ -4,78 +4,96 @@
 {{$profile := index .Data "Profile"}}
 
 {{if not $profile}}
-<h1>User Not Found</h1>
-<p>No account exists for that username.</p>
-<p><a href="/">Back to pool</a></p>
+<div class="empty-state">
+  <h1>User Not Found</h1>
+  <p class="text-muted">No account exists for that username.</p>
+  <a href="/" class="btn-primary" style="margin-top:1rem">Back to pool</a>
+</div>
 {{else}}
 
 {{$suggestions := index .Data "Suggestions"}}
 {{$votes := index .Data "Votes"}}
 
-<div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem">
-  {{if $profile.AvatarURL}}<img src="{{$profile.AvatarURL}}" alt="{{$profile.DisplayName}}" width="64" style="border-radius:50%">{{end}}
-  <div>
-    <h1 style="margin:0">{{$profile.DisplayName}}</h1>
-    <div>@{{$profile.TwitchLogin}} &middot; {{$profile.Role}}</div>
+<div class="profile-hero">
+  {{if $profile.AvatarURL}}
+  <img src="{{$profile.AvatarURL}}" alt="{{$profile.DisplayName}}" class="profile-avatar">
+  {{end}}
+  <div class="profile-info">
+    <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.1rem">
+      <h1 style="margin-bottom:0">{{$profile.DisplayName}}</h1>
+      <span class="badge role-{{$profile.Role}}">{{$profile.Role}}</span>
+    </div>
+    <div class="text-muted" style="font-size:0.875rem">@{{$profile.TwitchLogin}}</div>
+    <div class="profile-stats">
+      <div class="stat-pill">
+        <span class="stat-value">{{len $suggestions}}</span>
+        <span class="stat-label">suggestions</span>
+      </div>
+      <div class="stat-pill">
+        <span class="stat-value">{{len $votes}}</span>
+        <span class="stat-label">votes</span>
+      </div>
+    </div>
   </div>
 </div>
 
 <h2>Suggestions</h2>
 {{if not $suggestions}}
-<p>No suggestions yet.</p>
+<p class="text-muted">No suggestions yet.</p>
 {{else}}
-<table>
-  <thead>
-    <tr>
-      <th>Poster</th>
-      <th>Title</th>
-      <th>Year</th>
-      <th>Status</th>
-      <th>Votes</th>
-      <th>Watched</th>
-    </tr>
-  </thead>
-  <tbody>
-    {{range $suggestions}}
-    <tr>
-      <td>{{if .PosterURL}}<img src="{{.PosterURL}}" alt="{{.Title}}" width="40">{{end}}</td>
-      <td>{{.Title}}</td>
-      <td>{{if .ReleaseYear}}{{.ReleaseYear}}{{end}}</td>
-      <td>{{.Status}}</td>
-      <td>{{.NetVotes}}</td>
-      <td>{{if .WatchedAt}}{{fmtDate .WatchedAt}}{{end}}</td>
-    </tr>
-    {{end}}
-  </tbody>
-</table>
+<div class="pool-list">
+  {{range $suggestions}}
+  <div class="movie-card movie-card-slim">
+    <div class="card-poster">
+      {{if .PosterURL}}<img src="{{.PosterURL}}" alt="{{.Title}} poster">{{else}}<div class="poster-placeholder">🎬</div>{{end}}
+    </div>
+    <div class="card-info">
+      <div class="card-title-row">
+        <span class="card-title">{{.Title}}</span>
+        {{if .ReleaseYear}}<span class="card-year">· {{.ReleaseYear}}</span>{{end}}
+      </div>
+      <div class="card-meta">
+        <span class="badge badge-{{.Status}}">{{.Status}}</span>
+        {{if .WatchedAt}}<span class="text-muted" style="font-size:0.8rem">watched {{fmtDate .WatchedAt}}</span>{{end}}
+      </div>
+    </div>
+    <div class="card-votes" style="min-width:auto">
+      <span class="vote-count-only">{{.NetVotes}}</span>
+    </div>
+  </div>
+  {{end}}
+</div>
 {{end}}
 
-<h2>Votes</h2>
+<h2 style="margin-top:2rem">Votes</h2>
 {{if not $votes}}
-<p>No votes cast yet.</p>
+<p class="text-muted">No votes cast yet.</p>
 {{else}}
-<table>
-  <thead>
-    <tr>
-      <th>Poster</th>
-      <th>Title</th>
-      <th>Year</th>
-      <th>Vote</th>
-      <th>Status</th>
-    </tr>
-  </thead>
-  <tbody>
-    {{range $votes}}
-    <tr>
-      <td>{{if .PosterURL}}<img src="{{.PosterURL}}" alt="{{.Title}}" width="40">{{end}}</td>
-      <td>{{.Title}}</td>
-      <td>{{if .ReleaseYear}}{{.ReleaseYear}}{{end}}</td>
-      <td>{{if eq .Value 1}}▲{{else}}▼{{end}}</td>
-      <td>{{.Status}}</td>
-    </tr>
-    {{end}}
-  </tbody>
-</table>
+<div class="pool-list">
+  {{range $votes}}
+  <div class="movie-card movie-card-slim">
+    <div class="card-poster">
+      {{if .PosterURL}}<img src="{{.PosterURL}}" alt="{{.Title}} poster">{{else}}<div class="poster-placeholder">🎬</div>{{end}}
+    </div>
+    <div class="card-info">
+      <div class="card-title-row">
+        <span class="card-title">{{.Title}}</span>
+        {{if .ReleaseYear}}<span class="card-year">· {{.ReleaseYear}}</span>{{end}}
+      </div>
+      <div class="card-meta">
+        <span class="badge badge-{{.Status}}">{{.Status}}</span>
+      </div>
+    </div>
+    <div class="card-votes" style="min-width:auto">
+      {{if eq .Value 1}}
+      <span class="btn-vote up active" style="display:flex;align-items:center;justify-content:center">▲</span>
+      {{else}}
+      <span class="btn-vote down active" style="display:flex;align-items:center;justify-content:center">▼</span>
+      {{end}}
+    </div>
+  </div>
+  {{end}}
+</div>
 {{end}}
 
 {{end}}

@@ -1,16 +1,10 @@
 {{$m := .Movie}}
-<form hx-post="/movies/{{$m.ID}}/vote"
-      hx-target="#vote-{{$m.ID}}"
-      hx-swap="innerHTML"
-      style="display:inline">
+<form hx-post="/movies/{{$m.ID}}/vote" hx-target="#vote-{{$m.ID}}" hx-swap="innerHTML" style="display:contents">
   <input type="hidden" name="value" value="1">
-  <button type="submit"{{if eq $m.UserVote 1}} style="font-weight:bold"{{end}}>▲</button>
+  <button type="submit" class="btn-vote up{{if eq $m.UserVote 1}} active{{end}}">▲</button>
 </form>
-<span>{{$m.NetVotes}}</span>
-<form hx-post="/movies/{{$m.ID}}/vote"
-      hx-target="#vote-{{$m.ID}}"
-      hx-swap="innerHTML"
-      style="display:inline">
+<span class="vote-count">{{$m.NetVotes}}</span>
+<form hx-post="/movies/{{$m.ID}}/vote" hx-target="#vote-{{$m.ID}}" hx-swap="innerHTML" style="display:contents">
   <input type="hidden" name="value" value="-1">
-  <button type="submit"{{if eq $m.UserVote -1}} style="font-weight:bold"{{end}}>▼</button>
+  <button type="submit" class="btn-vote down{{if eq $m.UserVote -1}} active{{end}}">▼</button>
 </form>

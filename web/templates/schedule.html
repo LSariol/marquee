@@ -4,32 +4,50 @@
 {{$movie := index .Data "Movie"}}
 {{$schedules := index .Data "Schedules"}}
 
-<h1>Schedule: {{$movie.Title}}</h1>
+<div class="page-header">
+  <h1>Schedule: {{$movie.Title}}</h1>
+</div>
+
+<div class="movie-card" style="margin-bottom:1.5rem">
+  <div class="card-poster">
+    {{if $movie.PosterURL}}<img src="{{$movie.PosterURL}}" alt="{{$movie.Title}} poster">{{else}}<div class="poster-placeholder">🎬</div>{{end}}
+  </div>
+  <div class="card-info">
+    <div class="card-title-row">
+      <span class="card-title">{{$movie.Title}}</span>
+      {{if $movie.ReleaseYear}}<span class="card-year">· {{$movie.ReleaseYear}}</span>{{end}}
+    </div>
+    <div class="card-meta">
+      {{if $movie.TMDBRating}}<span class="card-rating">⭐ {{fmtRating $movie.TMDBRating}}</span>{{end}}
+      {{range $movie.Genres}}<span class="genre">{{.}}</span>{{end}}
+    </div>
+  </div>
+</div>
 
 {{if $schedules}}
-<p><strong>Already scheduled:</strong></p>
-<ul>
+<div class="info-box" style="margin-bottom:1.5rem">
+  <strong>Already scheduled:</strong>
   {{range $schedules}}
-  <li>{{fmtDateTime .ScheduledFor}} on <strong>{{.Channel}}</strong> by {{.StreamerDisplay}}</li>
+  <div style="margin-top:0.5rem">📅 {{fmtDateTime .ScheduledFor}} on <strong>{{.Channel}}</strong> by <a href="/u/{{.StreamerLogin}}">@{{.StreamerDisplay}}</a></div>
   {{end}}
-</ul>
+</div>
 {{end}}
 
 {{if and .User .User.IsStreamer}}
-<form method="POST" action="/schedules">
+<form method="POST" action="/schedules" class="schedule-form">
   <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
   <input type="hidden" name="movie_id" value="{{$movie.ID}}">
-  <label>
+  <label class="form-label">
     Date and time (UTC)
-    <input type="datetime-local" name="scheduled_for" required>
+    <input type="datetime-local" name="scheduled_for" required class="form-input">
   </label>
-  <button type="submit">Schedule</button>
+  <button type="submit" class="btn-primary" style="margin-top:0.75rem">Schedule</button>
 </form>
 {{else if .User}}
-<p>Only streamers can schedule movies.</p>
+<div class="info-box">Only streamers can schedule movies.</div>
 {{else}}
-<p><a href="/auth/login">Log in</a> to schedule movies.</p>
+<div class="info-box"><a href="/auth/login">Log in</a> to schedule movies.</div>
 {{end}}
 
-<p><a href="/">Back to pool</a></p>
+<p style="margin-top:1.5rem"><a href="/" class="text-muted">← Back to pool</a></p>
 {{end}}

@@ -1,21 +1,27 @@
 {{define "title"}}Suggest a Movie — Marquee{{end}}
 
 {{define "content"}}
-<h1>Suggest a Movie</h1>
-<p>Search for a movie below. Selecting one will add it to the pool.</p>
+<div class="page-header">
+  <h1>Suggest a Movie</h1>
+</div>
+<p class="text-muted" style="margin-bottom:1.25rem">Search for a movie below. Selecting one will add it to the pool.</p>
 
-<input
-  type="search"
-  name="q"
-  placeholder="Search TMDB..."
-  autofocus
-  hx-get="/suggest/search"
-  hx-target="#search-results"
-  hx-trigger="input delay:400ms, search"
-  hx-indicator="#search-spinner"
-  style="width:100%;max-width:480px"
->
-<span id="search-spinner" class="htmx-indicator"> Searching...</span>
+<div style="position:relative;max-width:560px">
+  <input
+    type="search"
+    name="q"
+    placeholder="Search TMDB…"
+    autofocus
+    class="search-input"
+    hx-get="/suggest/search"
+    hx-target="#search-results"
+    hx-trigger="input delay:400ms, search"
+    hx-indicator="#search-spinner"
+  >
+  <div id="search-spinner" class="searching-dots">
+    <span></span><span></span><span></span>
+  </div>
+</div>
 
-<div id="search-results" style="margin-top:1rem"></div>
+<div id="search-results" style="margin-top:1.25rem"></div>
 {{end}}

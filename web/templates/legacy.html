@@ -1,59 +1,73 @@
-{{define "title"}}Watched Movies{{end}}
+{{define "title"}}Watched — Marquee{{end}}
 
 {{define "content"}}
-<h1>Watched Movies</h1>
+<div class="page-header">
+  <h1>Watched Movies</h1>
+</div>
 
 {{$user := .User}}
 {{$movies := .Data}}
 {{if not $movies}}
-<p>No movies have been watched yet.</p>
+<div class="empty-state">
+  <p class="text-muted">No movies have been watched yet.</p>
+</div>
 {{else}}
-<table>
-  <thead>
-    <tr>
-      <th>Poster</th>
-      <th>Title</th>
-      <th>Year</th>
-      <th>Rating</th>
-      <th>Genres</th>
-      <th>Suggested by</th>
-      <th>Watched</th>
-      <th>Channel</th>
-      {{if $user}}{{if $user.IsStreamer}}<th></th>{{end}}{{end}}
-    </tr>
-  </thead>
-  <tbody>
-    {{range $movies}}
-    <tr>
-      <td>{{if .PosterURL}}<img src="{{.PosterURL}}" alt="{{.Title}}" width="40">{{end}}</td>
-      <td>{{.Title}}</td>
-      <td>{{if .ReleaseYear}}{{.ReleaseYear}}{{end}}</td>
-      <td>{{fmtRating .TMDBRating}}</td>
-      <td>{{join .Genres ", "}}</td>
-      <td><a href="/u/{{.SuggesterLogin}}">{{.SuggesterDisplay}}</a></td>
-      <td>{{if .WatchedAt}}{{fmtDate .WatchedAt}}{{end}}</td>
-      <td>{{if .WatchedChannel}}{{.WatchedChannel}}{{end}}</td>
-      {{if $user}}{{if $user.IsStreamer}}
-      <td>
-        <form method="POST" action="/movies/{{.ID}}/back-to-pool" style="display:inline">
-          <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
-          <button type="submit">Back to Pool</button>
-        </form>
-        {{if $user.IsAdmin}}
-        <details style="display:inline-block">
-          <summary>Remove</summary>
+<div class="pool-list">
+  {{range $movies}}
+  <div class="movie-card">
+
+    <div class="card-poster">
+      {{if .PosterURL}}
+      <img src="{{.PosterURL}}" alt="{{.Title}} poster">
+      {{else}}
+      <div class="poster-placeholder">🎬</div>
+      {{end}}
+    </div>
+
+    <div class="card-info">
+      <div class="card-title-row">
+        <span class="card-title">{{.Title}}</span>
+        {{if .ReleaseYear}}<span class="card-year">· {{.ReleaseYear}}</span>{{end}}
+      </div>
+      <div class="card-meta">
+        {{if .TMDBRating}}<span class="card-rating">⭐ {{fmtRating .TMDBRating}}</span>{{end}}
+        {{range .Genres}}<span class="genre">{{.}}</span>{{end}}
+      </div>
+      <div class="card-suggester">suggested by <a href="/u/{{.SuggesterLogin}}">@{{.SuggesterDisplay}}</a></div>
+    </div>
+
+    <div class="card-schedule" style="flex-direction:column;align-items:flex-start;gap:0.2rem">
+      {{if .WatchedAt}}
+      <span class="badge badge-watched">Watched {{fmtDate .WatchedAt}}</span>
+      {{end}}
+      {{if .WatchedChannel}}
+      <span class="text-muted" style="font-size:0.8125rem">· {{.WatchedChannel}}</span>
+      {{end}}
+    </div>
+
+    {{if and $user $user.IsStreamer}}
+    <div class="card-actions">
+      <form method="POST" action="/movies/{{.ID}}/back-to-pool" style="display:contents">
+        <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+        <button type="submit" class="btn-ghost btn-sm" style="color:var(--watched)">Back to Pool</button>
+      </form>
+      {{if $user.IsAdmin}}
+      <details>
+        <summary class="btn-ghost btn-sm btn-danger">✕</summary>
+        <div class="remove-form">
           <form method="POST" action="/movies/{{.ID}}/remove">
             <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
-            <input type="text" name="reason" placeholder="Reason" required>
-            <button type="submit">Confirm</button>
+            <input type="text" name="reason" placeholder="Reason for removal" required class="form-input" style="margin-bottom:0.4rem">
+            <button type="submit" class="btn-primary btn-sm" style="width:100%">Confirm Remove</button>
           </form>
-        </details>
-        {{end}}
-      </td>
-      {{end}}{{end}}
-    </tr>
+        </div>
+      </details>
+      {{end}}
+    </div>
     {{end}}
-  </tbody>
-</table>
+
+  </div>
+  {{end}}
+</div>
 {{end}}
 {{end}}

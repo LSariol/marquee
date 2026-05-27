@@ -1,46 +1,40 @@
-{{define "title"}}Admin{{end}}
+{{define "title"}}Admin — Marquee{{end}}
 
 {{define "content"}}
-<h1>Admin — User Management</h1>
+<div class="page-header">
+  <h1>User Management</h1>
+</div>
 
 {{$actor := .User}}
 {{$users := .Data}}
-<table>
-  <thead>
-    <tr>
-      <th>User</th>
-      <th>Login</th>
-      <th>Current Role</th>
-      <th>Change Role</th>
-    </tr>
-  </thead>
-  <tbody>
-    {{range $users}}
-    <tr>
-      <td>
-        {{if .AvatarURL}}<img src="{{.AvatarURL}}" alt="{{.DisplayName}}" width="24">{{end}}
-        {{.DisplayName}}
-      </td>
-      <td><a href="/u/{{.TwitchLogin}}">{{.TwitchLogin}}</a></td>
-      <td>{{.Role}}</td>
-      <td>
-        {{if ne .ID $actor.ID}}
-        <form method="POST" action="/admin/users/{{.ID}}/role" style="display:inline">
-          <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
-          <select name="role">
-            <option value="user"{{if eq .Role "user"}} selected{{end}}>user</option>
-            <option value="streamer"{{if eq .Role "streamer"}} selected{{end}}>streamer</option>
-            <option value="admin"{{if eq .Role "admin"}} selected{{end}}>admin</option>
-            <option value="owner"{{if eq .Role "owner"}} selected{{end}}>owner</option>
-          </select>
-          <button type="submit">Save</button>
-        </form>
-        {{else}}
-        <em>(you)</em>
-        {{end}}
-      </td>
-    </tr>
-    {{end}}
-  </tbody>
-</table>
+<div class="user-list">
+  {{range $users}}
+  <div class="user-row">
+    <div class="user-identity">
+      {{if .AvatarURL}}<img src="{{.AvatarURL}}" alt="{{.DisplayName}}" class="nav-avatar">{{end}}
+      <div>
+        <div style="font-weight:600;color:var(--text)">{{.DisplayName}}</div>
+        <div><a href="/u/{{.TwitchLogin}}" class="text-muted" style="font-size:0.8125rem">@{{.TwitchLogin}}</a></div>
+      </div>
+    </div>
+    <span class="badge role-{{.Role}}">{{.Role}}</span>
+    <div style="flex-shrink:0">
+      {{if ne .ID $actor.ID}}
+      <form method="POST" action="/admin/users/{{.ID}}/role" style="display:flex;gap:0.5rem;align-items:center">
+        <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+        <select name="role" class="form-input" style="padding:0.25rem 0.5rem;font-size:0.875rem">
+          <option value="user"{{if eq .Role "user"}} selected{{end}}>user</option>
+          <option value="streamer"{{if eq .Role "streamer"}} selected{{end}}>streamer</option>
+          <option value="admin"{{if eq .Role "admin"}} selected{{end}}>admin</option>
+          <option value="owner"{{if eq .Role "owner"}} selected{{end}}>owner</option>
+        </select>
+        <button type="submit" class="btn-primary btn-sm">Save</button>
+      </form>
+      {{else}}
+      <span class="text-muted" style="font-size:0.875rem">(you)</span>
+      {{end}}
+    </div>
+  </div>
+  {{end}}
+</div>
 {{end}}

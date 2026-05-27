@@ -1,24 +1,34 @@
 {{if not .Results}}
-<p>No results found.</p>
+<p class="text-muted">No results found. Try a different title.</p>
 {{else}}
-{{range .Results}}
-<div style="display:flex;align-items:flex-start;gap:1rem;margin-bottom:1rem;border-bottom:1px solid #ccc;padding-bottom:1rem">
-  {{if .PosterURL}}
-  <img src="{{.PosterURL}}" alt="{{.Title}} poster" width="60" style="flex-shrink:0">
-  {{end}}
-  <div>
-    <strong>{{.Title}}</strong>
-    {{with .ReleaseYear}}<span>({{.}})</span>{{end}}
-    <form method="POST" action="/movies" style="margin-top:0.5rem">
-      <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
-      <input type="hidden" name="tmdb_id" value="{{.ID}}">
-      <label>
-        Suggested watch date (optional):
-        <input type="date" name="suggested_watch_date">
-      </label>
-      <button type="submit">Suggest</button>
-    </form>
+<div class="pool-list">
+  {{range .Results}}
+  <div class="movie-card">
+
+    <div class="card-poster">
+      {{if .PosterURL}}
+      <img src="{{.PosterURL}}" alt="{{.Title}} poster">
+      {{else}}
+      <div class="poster-placeholder">🎬</div>
+      {{end}}
+    </div>
+
+    <div class="card-info">
+      <div class="card-title-row">
+        <span class="card-title">{{.Title}}</span>
+        {{if .ReleaseYear}}<span class="card-year">· {{.ReleaseYear}}</span>{{end}}
+      </div>
+    </div>
+
+    <div class="card-actions" style="margin-left:auto">
+      <form method="POST" action="/movies" style="display:contents">
+        <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+        <input type="hidden" name="tmdb_id" value="{{.ID}}">
+        <button type="submit" class="btn-primary btn-sm">+ Suggest</button>
+      </form>
+    </div>
+
   </div>
+  {{end}}
 </div>
-{{end}}
 {{end}}

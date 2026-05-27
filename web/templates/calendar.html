@@ -1,49 +1,40 @@
-{{define "title"}}Calendar{{end}}
+{{define "title"}}Calendar — Marquee{{end}}
 
 {{define "content"}}
-<h1>Calendar</h1>
+<div class="page-header">
+  <h1>Calendar</h1>
+</div>
 
 {{$user := .User}}
 {{$days := .Data}}
 {{if not $days}}
-<p>No movies scheduled yet.</p>
+<div class="empty-state">
+  <p class="text-muted">No movies scheduled yet.</p>
+</div>
 {{else}}
 {{range $days}}
-<h2>{{.Date}} (UTC)</h2>
-<table>
-  <thead>
-    <tr>
-      <th>Time</th>
-      <th>Movie</th>
-      <th>Channel</th>
-      <th>Streamer</th>
-      {{if $user}}<th></th>{{end}}
-    </tr>
-  </thead>
-  <tbody>
-    {{range .Entries}}
-    <tr>
-      <td>{{fmtTime .ScheduledFor}}</td>
-      <td>
-        {{if .PosterURL}}<img src="{{.PosterURL}}" alt="{{.MovieTitle}}" width="30">{{end}}
-        {{.MovieTitle}}
-      </td>
-      <td>{{.Channel}}</td>
-      <td><a href="/u/{{.StreamerLogin}}">{{.StreamerDisplay}}</a></td>
-      {{if $user}}
-      <td>
-        {{if or (eq $user.ID .StreamerID) ($user.IsAdmin)}}
-        <form method="POST" action="/schedules/{{.ID}}/delete" style="display:inline">
-          <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
-          <button type="submit">Delete</button>
-        </form>
-        {{end}}
-      </td>
-      {{end}}
-    </tr>
+<div class="calendar-date-header">{{.Date}} (UTC)</div>
+<div class="calendar-list">
+  {{range .Entries}}
+  <div class="calendar-entry">
+    <span class="entry-time">{{fmtTime .ScheduledFor}}</span>
+    <div class="entry-poster">
+      {{if .PosterURL}}<img src="{{.PosterURL}}" alt="{{.MovieTitle}} poster">{{else}}<div class="poster-placeholder" style="width:28px;height:42px;font-size:0.7rem">🎬</div>{{end}}
+    </div>
+    <span class="entry-title">{{.MovieTitle}}</span>
+    <span class="entry-channel text-muted">{{.Channel}}</span>
+    <span class="entry-streamer"><a href="/u/{{.StreamerLogin}}">@{{.StreamerDisplay}}</a></span>
+    {{if $user}}
+    {{if or (eq $user.ID .StreamerID) ($user.IsAdmin)}}
+    <form method="POST" action="/schedules/{{.ID}}/delete" style="display:contents">
+      <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+      <button type="submit" class="btn-ghost btn-sm btn-danger">✕</button>
+    </form>
     {{end}}
-  </tbody>
-</table>
+    {{end}}
+  </div>
+  {{end}}
+</div>
 {{end}}
 {{end}}
 {{end}}
