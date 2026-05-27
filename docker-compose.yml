@@ -12,10 +12,10 @@ services:
       - TMDB_API_KEY=${MARQUEE_TMDB_API_KEY}
       - SESSION_SECRET=${MARQUEE_SESSION_SECRET}
       - OWNER_TWITCH_ID=${MARQUEE_OWNER_TWITCH_ID}
-      - PORT=${MARQUEE_PORT:-3051}
+      - PORT=3051
       - LOG_LEVEL=info
     ports:
-      - "${MARQUEE_PORT:-3051}:${MARQUEE_PORT:-3051}"
+      - 3051:3051
     networks:
       - spark
 
