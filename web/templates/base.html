@@ -1,0 +1,50 @@
+{{define "base"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="{{.CSRFToken}}">
+  <title>{{block "title" .}}Marquee{{end}}</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/htmx.min.js" defer></script>
+  <script>
+    document.addEventListener('htmx:configRequest', function(e) {
+      var t = document.querySelector('meta[name="csrf-token"]');
+      if (t) e.detail.headers['X-CSRF-Token'] = t.content;
+    });
+  </script>
+</head>
+<body>
+  <nav>
+    <a href="/">Marquee</a>
+    &nbsp;|&nbsp;
+    <a href="/calendar">Calendar</a>
+    &nbsp;|&nbsp;
+    <a href="/legacy">Watched</a>
+    {{if .User}}
+      &nbsp;|&nbsp;
+      <a href="/me">{{.User.DisplayName}}</a>
+      {{if .User.IsOwner}}
+      &nbsp;|&nbsp;
+      <a href="/admin">Admin</a>
+      {{end}}
+      &nbsp;
+      <form method="POST" action="/auth/logout" style="display:inline">
+        <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+        <button type="submit">Log out</button>
+      </form>
+    {{else}}
+      &nbsp;|&nbsp;
+      <a href="/auth/login">Log in with Twitch</a>
+    {{end}}
+  </nav>
+  <main>
+    {{block "content" .}}{{end}}
+  </main>
+  <footer>
+    <small>Powered by <a href="https://www.themoviedb.org/" target="_blank" rel="noopener">TMDB</a></small>
+  </footer>
+</body>
+</html>
+{{end}}

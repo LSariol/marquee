@@ -1,0 +1,95 @@
+{{define "title"}}Marquee — Movie Pool{{end}}
+
+{{define "content"}}
+<h1>Movie Pool</h1>
+
+{{if .User}}
+<p><a href="/suggest">+ Suggest a movie</a></p>
+{{else}}
+<p><a href="/auth/login">Log in with Twitch</a> to suggest and vote on movies.</p>
+{{end}}
+
+{{$pool := .Data}}
+{{$loggedIn := .User}}
+{{if not $pool}}
+<p>No movies in the pool yet. Be the first to suggest one!</p>
+{{else}}
+<table>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Poster</th>
+      <th>Title</th>
+      <th>Year</th>
+      <th>Rating</th>
+      <th>Genres</th>
+      <th>Suggested by</th>
+      <th>Watching Soon</th>
+      <th>Votes</th>
+      {{if $loggedIn}}{{if $loggedIn.IsStreamer}}<th></th>{{end}}{{end}}
+    </tr>
+  </thead>
+  <tbody>
+    {{range $i, $m := $pool}}
+    <tr id="movie-row-{{$m.ID}}">
+      <td>{{add $i 1}}</td>
+      <td>
+        {{if $m.PosterURL}}<img src="{{$m.PosterURL}}" alt="{{$m.Title}}" width="40">{{end}}
+      </td>
+      <td>{{$m.Title}}</td>
+      <td>{{if $m.ReleaseYear}}{{$m.ReleaseYear}}{{end}}</td>
+      <td>{{fmtRating $m.TMDBRating}}</td>
+      <td>{{join $m.Genres ", "}}</td>
+      <td><a href="/u/{{$m.SuggesterLogin}}">{{$m.SuggesterDisplay}}</a></td>
+      <td>
+        {{if $m.WatchingSoon}}
+        <a href="/schedule/{{$m.ID}}">{{fmtDate $m.WatchingSoon}} — {{$m.WatchingChannel}}</a>
+        {{else if and $loggedIn $loggedIn.IsStreamer}}
+        <a href="/schedule/{{$m.ID}}">+ Schedule</a>
+        {{end}}
+      </td>
+      <td id="vote-{{$m.ID}}">
+        {{if $loggedIn}}
+        <form hx-post="/movies/{{$m.ID}}/vote"
+              hx-target="#vote-{{$m.ID}}"
+              hx-swap="innerHTML"
+              style="display:inline">
+          <input type="hidden" name="value" value="1">
+          <button type="submit"{{if eq $m.UserVote 1}} style="font-weight:bold"{{end}}>▲</button>
+        </form>
+        {{end}}
+        <span>{{$m.NetVotes}}</span>
+        {{if $loggedIn}}
+        <form hx-post="/movies/{{$m.ID}}/vote"
+              hx-target="#vote-{{$m.ID}}"
+              hx-swap="innerHTML"
+              style="display:inline">
+          <input type="hidden" name="value" value="-1">
+          <button type="submit"{{if eq $m.UserVote -1}} style="font-weight:bold"{{end}}>▼</button>
+        </form>
+        {{end}}
+      </td>
+      {{if $loggedIn}}{{if $loggedIn.IsStreamer}}
+      <td>
+        <form method="POST" action="/movies/{{$m.ID}}/watched" style="display:inline">
+          <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+          <button type="submit">Watched</button>
+        </form>
+        {{if $loggedIn.IsAdmin}}
+        <details style="display:inline-block">
+          <summary>Remove</summary>
+          <form method="POST" action="/movies/{{$m.ID}}/remove">
+            <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+            <input type="text" name="reason" placeholder="Reason" required>
+            <button type="submit">Confirm</button>
+          </form>
+        </details>
+        {{end}}
+      </td>
+      {{end}}{{end}}
+    </tr>
+    {{end}}
+  </tbody>
+</table>
+{{end}}
+{{end}}

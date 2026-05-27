@@ -1,0 +1,49 @@
+{{define "title"}}Calendar{{end}}
+
+{{define "content"}}
+<h1>Calendar</h1>
+
+{{$user := .User}}
+{{$days := .Data}}
+{{if not $days}}
+<p>No movies scheduled yet.</p>
+{{else}}
+{{range $days}}
+<h2>{{.Date}} (UTC)</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Time</th>
+      <th>Movie</th>
+      <th>Channel</th>
+      <th>Streamer</th>
+      {{if $user}}<th></th>{{end}}
+    </tr>
+  </thead>
+  <tbody>
+    {{range .Entries}}
+    <tr>
+      <td>{{fmtTime .ScheduledFor}}</td>
+      <td>
+        {{if .PosterURL}}<img src="{{.PosterURL}}" alt="{{.MovieTitle}}" width="30">{{end}}
+        {{.MovieTitle}}
+      </td>
+      <td>{{.Channel}}</td>
+      <td><a href="/u/{{.StreamerLogin}}">{{.StreamerDisplay}}</a></td>
+      {{if $user}}
+      <td>
+        {{if or (eq $user.ID .StreamerID) ($user.IsAdmin)}}
+        <form method="POST" action="/schedules/{{.ID}}/delete" style="display:inline">
+          <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+          <button type="submit">Delete</button>
+        </form>
+        {{end}}
+      </td>
+      {{end}}
+    </tr>
+    {{end}}
+  </tbody>
+</table>
+{{end}}
+{{end}}
+{{end}}

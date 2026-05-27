@@ -1,0 +1,24 @@
+services:
+  marquee:
+    build: .
+    container_name: marquee
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=${MARQUEE_APP_DATABASE_URL}
+      - MIGRATOR_DATABASE_URL=${MARQUEE_MIGRATOR_DATABASE_URL}
+      - BASE_URL=${MARQUEE_BASE_URL}
+      - TWITCH_CLIENT_ID=${MARQUEE_TWITCH_CLIENT_ID}
+      - TWITCH_CLIENT_SECRET=${MARQUEE_TWITCH_CLIENT_SECRET}
+      - TMDB_API_KEY=${MARQUEE_TMDB_API_KEY}
+      - SESSION_SECRET=${MARQUEE_SESSION_SECRET}
+      - OWNER_TWITCH_ID=${MARQUEE_OWNER_TWITCH_ID}
+      - PORT=${MARQUEE_PORT:-3051}
+      - LOG_LEVEL=info
+    ports:
+      - "${MARQUEE_PORT:-3051}:${MARQUEE_PORT:-3051}"
+    networks:
+      - spark
+
+networks:
+  spark:
+    external: true

@@ -1,0 +1,46 @@
+{{define "title"}}Admin{{end}}
+
+{{define "content"}}
+<h1>Admin — User Management</h1>
+
+{{$actor := .User}}
+{{$users := .Data}}
+<table>
+  <thead>
+    <tr>
+      <th>User</th>
+      <th>Login</th>
+      <th>Current Role</th>
+      <th>Change Role</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{range $users}}
+    <tr>
+      <td>
+        {{if .AvatarURL}}<img src="{{.AvatarURL}}" alt="{{.DisplayName}}" width="24">{{end}}
+        {{.DisplayName}}
+      </td>
+      <td><a href="/u/{{.TwitchLogin}}">{{.TwitchLogin}}</a></td>
+      <td>{{.Role}}</td>
+      <td>
+        {{if ne .ID $actor.ID}}
+        <form method="POST" action="/admin/users/{{.ID}}/role" style="display:inline">
+          <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+          <select name="role">
+            <option value="user"{{if eq .Role "user"}} selected{{end}}>user</option>
+            <option value="streamer"{{if eq .Role "streamer"}} selected{{end}}>streamer</option>
+            <option value="admin"{{if eq .Role "admin"}} selected{{end}}>admin</option>
+            <option value="owner"{{if eq .Role "owner"}} selected{{end}}>owner</option>
+          </select>
+          <button type="submit">Save</button>
+        </form>
+        {{else}}
+        <em>(you)</em>
+        {{end}}
+      </td>
+    </tr>
+    {{end}}
+  </tbody>
+</table>
+{{end}}

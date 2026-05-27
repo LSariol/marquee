@@ -1,0 +1,24 @@
+{{if not .Results}}
+<p>No results found.</p>
+{{else}}
+{{range .Results}}
+<div style="display:flex;align-items:flex-start;gap:1rem;margin-bottom:1rem;border-bottom:1px solid #ccc;padding-bottom:1rem">
+  {{if .PosterURL}}
+  <img src="{{.PosterURL}}" alt="{{.Title}} poster" width="60" style="flex-shrink:0">
+  {{end}}
+  <div>
+    <strong>{{.Title}}</strong>
+    {{with .ReleaseYear}}<span>({{.}})</span>{{end}}
+    <form method="POST" action="/movies" style="margin-top:0.5rem">
+      <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+      <input type="hidden" name="tmdb_id" value="{{.ID}}">
+      <label>
+        Suggested watch date (optional):
+        <input type="date" name="suggested_watch_date">
+      </label>
+      <button type="submit">Suggest</button>
+    </form>
+  </div>
+</div>
+{{end}}
+{{end}}

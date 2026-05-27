@@ -1,0 +1,82 @@
+{{define "title"}}{{if index .Data "Profile"}}{{(index .Data "Profile").DisplayName}} — Marquee{{else}}User Not Found{{end}}{{end}}
+
+{{define "content"}}
+{{$profile := index .Data "Profile"}}
+
+{{if not $profile}}
+<h1>User Not Found</h1>
+<p>No account exists for that username.</p>
+<p><a href="/">Back to pool</a></p>
+{{else}}
+
+{{$suggestions := index .Data "Suggestions"}}
+{{$votes := index .Data "Votes"}}
+
+<div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem">
+  {{if $profile.AvatarURL}}<img src="{{$profile.AvatarURL}}" alt="{{$profile.DisplayName}}" width="64" style="border-radius:50%">{{end}}
+  <div>
+    <h1 style="margin:0">{{$profile.DisplayName}}</h1>
+    <div>@{{$profile.TwitchLogin}} &middot; {{$profile.Role}}</div>
+  </div>
+</div>
+
+<h2>Suggestions</h2>
+{{if not $suggestions}}
+<p>No suggestions yet.</p>
+{{else}}
+<table>
+  <thead>
+    <tr>
+      <th>Poster</th>
+      <th>Title</th>
+      <th>Year</th>
+      <th>Status</th>
+      <th>Votes</th>
+      <th>Watched</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{range $suggestions}}
+    <tr>
+      <td>{{if .PosterURL}}<img src="{{.PosterURL}}" alt="{{.Title}}" width="40">{{end}}</td>
+      <td>{{.Title}}</td>
+      <td>{{if .ReleaseYear}}{{.ReleaseYear}}{{end}}</td>
+      <td>{{.Status}}</td>
+      <td>{{.NetVotes}}</td>
+      <td>{{if .WatchedAt}}{{fmtDate .WatchedAt}}{{end}}</td>
+    </tr>
+    {{end}}
+  </tbody>
+</table>
+{{end}}
+
+<h2>Votes</h2>
+{{if not $votes}}
+<p>No votes cast yet.</p>
+{{else}}
+<table>
+  <thead>
+    <tr>
+      <th>Poster</th>
+      <th>Title</th>
+      <th>Year</th>
+      <th>Vote</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{range $votes}}
+    <tr>
+      <td>{{if .PosterURL}}<img src="{{.PosterURL}}" alt="{{.Title}}" width="40">{{end}}</td>
+      <td>{{.Title}}</td>
+      <td>{{if .ReleaseYear}}{{.ReleaseYear}}{{end}}</td>
+      <td>{{if eq .Value 1}}▲{{else}}▼{{end}}</td>
+      <td>{{.Status}}</td>
+    </tr>
+    {{end}}
+  </tbody>
+</table>
+{{end}}
+
+{{end}}
+{{end}}

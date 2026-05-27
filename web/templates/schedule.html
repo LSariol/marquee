@@ -1,0 +1,35 @@
+{{define "title"}}Schedule — {{(index .Data "Movie").Title}}{{end}}
+
+{{define "content"}}
+{{$movie := index .Data "Movie"}}
+{{$schedules := index .Data "Schedules"}}
+
+<h1>Schedule: {{$movie.Title}}</h1>
+
+{{if $schedules}}
+<p><strong>Already scheduled:</strong></p>
+<ul>
+  {{range $schedules}}
+  <li>{{fmtDateTime .ScheduledFor}} on <strong>{{.Channel}}</strong> by {{.StreamerDisplay}}</li>
+  {{end}}
+</ul>
+{{end}}
+
+{{if and .User .User.IsStreamer}}
+<form method="POST" action="/schedules">
+  <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+  <input type="hidden" name="movie_id" value="{{$movie.ID}}">
+  <label>
+    Date and time (UTC)
+    <input type="datetime-local" name="scheduled_for" required>
+  </label>
+  <button type="submit">Schedule</button>
+</form>
+{{else if .User}}
+<p>Only streamers can schedule movies.</p>
+{{else}}
+<p><a href="/auth/login">Log in</a> to schedule movies.</p>
+{{end}}
+
+<p><a href="/">Back to pool</a></p>
+{{end}}

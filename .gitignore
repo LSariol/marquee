@@ -1,0 +1,5 @@
+.env
+marquee
+marquee.exe
+tmp/
+*.test
